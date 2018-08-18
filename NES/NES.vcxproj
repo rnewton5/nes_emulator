@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\nes\palette.cpp" />
     <ClCompile Include="src\nes\cpu_bus.cpp" />
     <ClCompile Include="src\nes\interrupt_bus.cpp" />
     <ClCompile Include="src\nes\ppu.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="include\nes\interrupt_bus.h" />
     <ClInclude Include="include\nes\ppu.h" />
     <ClInclude Include="include\nes\utils\ines_parser.h" />
+    <ClInclude Include="include\nes\palette.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
