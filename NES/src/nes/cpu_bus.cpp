@@ -12,27 +12,19 @@ namespace nes {
   }
 
   void CpuBus::write(WORD address, BYTE value) {
-    if (address < 0x2000) {
-      this->cartridge->write(address, value);
-    } else if (address < 0x4000) {
+    if (address < 0x4000)
       this->ppu->write(address, value);
-    } else if (address < 0x4020) {
-      // reserved for apu and io
-    } else {
+    //else if (address < 0x4020)
+    //  reserved for apu and io
+    else
       this->cartridge->write(address, value);
-    }
   }
 
   BYTE CpuBus::readByte(WORD address) {
-    if (address < 0x2000) {
-      return this->cartridge->read(address);
-    }
-    if (address < 0x4000) {
+    if (address < 0x4000) 
       return this->ppu->read(address);
-    }
-    if (address < 0x4020) {
-      // reserved for apu and io
-    }
+    //if (address < 0x4020) 
+    //  reserved for apu and io
     return this->cartridge->read(address);
   }
 
