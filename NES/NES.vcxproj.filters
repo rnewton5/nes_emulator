@@ -39,6 +39,12 @@
     <ClCompile Include="src\nes\ppu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\nes\interrupt_bus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nes\cpu_bus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\nes\cartridge\mappers\mapper.h">
@@ -59,9 +65,6 @@
     <ClInclude Include="include\nes\utils\ines_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\nes\bus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\nes\cpu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -69,6 +72,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\nes\common\globals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\nes\interrupt_bus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\nes\cpu_bus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

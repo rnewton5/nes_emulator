@@ -7,25 +7,25 @@ namespace nes {
   }
 
   void Ppu::reset() {
-    ppuCtrl = 0x00;             // 0000 0000
-    ppuMask = 0x00;             // 0000 0000
+    ppuCtrl   = 0x00;             // 0000 0000
+    ppuMask   = 0x00;             // 0000 0000
     ppuStatus = ppuStatus & 0x80; // U??x xxxx
-    oamAddr = oamAddr;          // unchanged
-    latch = 0x00;             // latch cleared
+    oamAddr   = oamAddr;          // unchanged
+    latch     = 0x00;             // latch cleared
     ppuScroll = 0x00;             // $0000
-    ppuAddr = ppuAddr;          // unchanged
-    ppuData = 0x00;             // $00
+    ppuAddr   = ppuAddr;          // unchanged
+    ppuData   = 0x00;             // $00
   }
 
   void Ppu::init() {
-    ppuCtrl = 0x00; // 0000 0000
-    ppuMask = 0x00; // 0000 0000
+    ppuCtrl   = 0x00; // 0000 0000
+    ppuMask   = 0x00; // 0000 0000
     ppuStatus = 0xA0; // +0+x xxxx
-    oamAddr = 0x00; // $00
-    latch = 0x00; // latch cleared
+    oamAddr   = 0x00; // $00
+    latch     = 0x00; // latch cleared
     ppuScroll = 0x00; // $0000
-    ppuAddr = 0x00; // $0000
-    ppuData = 0x00; // $00
+    ppuAddr   = 0x00; // $0000
+    ppuData   = 0x00; // $00
   }
 
   void Ppu::write(WORD address, BYTE value) {
@@ -37,13 +37,13 @@ namespace nes {
 
     address = (address % 0x2008) + 0x2000;
     switch (address) {
-      case 0x2000: ppuCtrl = value; break;
-      case 0x2001: ppuMask = value; break;
-      case 0x2003: oamAddr = value; break;
-      case 0x2004: oamData = value; break;
+      case 0x2000: ppuCtrl   = value; break;
+      case 0x2001: ppuMask   = value; break;
+      case 0x2003: oamAddr   = value; break;
+      case 0x2004: oamData   = value; break;
       case 0x2005: ppuScroll = value; break; // TODO: write x2 ???
-      case 0x2006: ppuAddr = value; break; // TODO: write x2 ???
-      case 0x2007: ppuData = value; break;
+      case 0x2006: ppuAddr   = value; break; // TODO: write x2 ???
+      case 0x2007: ppuData   = value; break;
     }
   }
 

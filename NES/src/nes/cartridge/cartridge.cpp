@@ -5,7 +5,7 @@
 
 namespace nes {
 
-  Cartridge::Cartridge(std::string file) {
+  Cartridge::Cartridge(std::string file, InterruptBus & interruptBus) {
     InesParser inp = InesParser(file);
 
     if (inp.isChrRam()) {
@@ -20,7 +20,7 @@ namespace nes {
     mirroringMode = inp.getMirroringMode();
     hasBattery = inp.hasBatteryBackedRam();
     mapper = MapperFactory::Create(inp.getMapperNumber());
-    irq = false;
+    this->interruptBus = &interruptBus;
   }
 
   Cartridge::Cartridge(const Cartridge & cart) {
@@ -31,7 +31,6 @@ namespace nes {
     isChrMemoryRam = cart.isChrMemoryRam;
     hasBattery = cart.hasBattery;
     mapper = cart.mapper;
-    irq = cart.irq;
   }
 
   Cartridge::~Cartridge() {
@@ -73,13 +72,4 @@ namespace nes {
   bool Cartridge::hasBatteryBackedRam() {
     return hasBattery;
   }
-
-  bool Cartridge::irqOccured() {
-    return irq;
-  }
-
-  void Cartridge::clearIrq() {
-    irq = false;
-  }
-
 }

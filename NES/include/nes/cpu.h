@@ -1,13 +1,14 @@
 #pragma once
 
 #include <nes\common\globals.h>
-#include <nes\cartridge\cartridge.h>
+#include <nes\cpu_bus.h>
+#include <nes\interrupt_bus.h>
 
 namespace nes {
 
   class Cpu {
   public:
-    Cpu(Cartridge & cartridge);
+    Cpu(CpuBus & bus, InterruptBus & interruptBus);
 
     void reset();
     void executeNextInstruction();
@@ -17,14 +18,12 @@ namespace nes {
     // memory 
     BYTE ram[2048];
 
-    Cartridge * cartridge;
-    // Ppu * ppu;
-    // Apu * apu;
-    // InputDevice * input1;
-    // InputDevice * input2;
+    CpuBus * bus;
+    InterruptBus * interruptBus;
 
     // These map addresses accordingly
     BYTE read(WORD address);
+    WORD read16(WORD address);
     void write(WORD address, BYTE value);
 
     // registers

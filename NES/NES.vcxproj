@@ -132,6 +132,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\nes\cpu_bus.cpp" />
+    <ClCompile Include="src\nes\interrupt_bus.cpp" />
     <ClCompile Include="src\nes\ppu.cpp" />
     <ClCompile Include="src\nes\cpu.cpp" />
     <ClCompile Include="src\nes\cartridge\cartridge.cpp" />
@@ -142,7 +144,7 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\nes\bus.h" />
+    <ClInclude Include="include\nes\cpu_bus.h" />
     <ClInclude Include="include\nes\cartridge\cartridge.h" />
     <ClInclude Include="include\nes\common\globals.h" />
     <ClInclude Include="include\nes\cpu.h" />
@@ -150,6 +152,7 @@
     <ClInclude Include="include\nes\cartridge\mappers\mapper_001.h" />
     <ClInclude Include="include\nes\cartridge\mappers\mapper_factory.h" />
     <ClInclude Include="include\nes\cartridge\mappers\mapper.h" />
+    <ClInclude Include="include\nes\interrupt_bus.h" />
     <ClInclude Include="include\nes\ppu.h" />
     <ClInclude Include="include\nes\utils\ines_parser.h" />
   </ItemGroup>

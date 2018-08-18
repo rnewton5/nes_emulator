@@ -1,14 +1,16 @@
 #pragma once
 
-#include <nes\cartridge\mappers\mapper.h>
-#include <vector>
 #include <nes\common\globals.h>
+#include <nes\cartridge\mappers\mapper.h>
+#include <nes\interrupt_bus.h>
+
+#include <vector>
 
 namespace nes {
 
   class Cartridge {
   public:
-    Cartridge(std::string file);
+    Cartridge(std::string file, InterruptBus & interruptBus);
     Cartridge(const Cartridge & cart);
     ~Cartridge();
 
@@ -23,10 +25,9 @@ namespace nes {
     void setMirroringMode(int mirroringMode);
     bool hasChrRam();
     bool hasBatteryBackedRam();
-    bool irqOccured();
-    void clearIrq();
 
   private:
+    InterruptBus * interruptBus;
     Mapper * mapper;
     std::vector<BYTE> prgRom;
     std::vector<BYTE> prgRam;
@@ -35,7 +36,6 @@ namespace nes {
     int mirroringMode;
     bool isChrMemoryRam;
     bool hasBattery;
-    bool irq; // only set by certain mappers
   };
 
 }
