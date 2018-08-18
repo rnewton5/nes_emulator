@@ -1,12 +1,16 @@
 #pragma once
 
 #include <nes\common\globals.h>
+#include <nes\interrupt_bus.h>
+#include <nes\palette.h>
 
 namespace nes {
 
+
+
   class Ppu {
   public:
-    Ppu();
+    Ppu(InterruptBus & interruptBus);
 
     // https://wiki.nesdev.com/w/index.php/PPU_power_up_state
     void reset();
@@ -15,10 +19,9 @@ namespace nes {
     void write(WORD address, BYTE value);
     BYTE read(WORD address);
 
-    bool nmiOccured();
-    void clearNmi();
-
   private:
+    InterruptBus * interruptBus;
+    Palette palette;
 
     // The ppu exposes eight memory mapped registers to the Cpu's address space.
     //  they are mirrored every eight bytes from $2008 -> $3FFF
@@ -34,8 +37,7 @@ namespace nes {
     BYTE oamDma;    // $4014
 
     BYTE latch;
-
-    bool nmi;
+    bool writeToggle; 
   };
 
 }
