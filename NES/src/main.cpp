@@ -15,7 +15,7 @@ int main() {
   nes::Cpu cpu = nes::Cpu(cpuBus, interruptBus);
 
   while (!cpu.isStopped()) {
-    cpu.executeNextInstruction();
+    cpu.tick();
   }
 
   std::cin.get();
