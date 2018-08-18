@@ -14,8 +14,9 @@ namespace nes {
   void CpuBus::write(WORD address, BYTE value) {
     if (address < 0x4000)
       this->ppu->write(address, value);
-    //else if (address < 0x4020)
-    //  reserved for apu and io
+    else if (address < 0x4020)
+      //reserved for apu and io
+      return;
     else
       this->cartridge->write(address, value);
   }
@@ -23,8 +24,9 @@ namespace nes {
   BYTE CpuBus::readByte(WORD address) {
     if (address < 0x4000) 
       return this->ppu->read(address);
-    //if (address < 0x4020) 
-    //  reserved for apu and io
+    if (address < 0x4020)
+      //reserved for apu and io
+      return 0;
     return this->cartridge->read(address);
   }
 
