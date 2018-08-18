@@ -392,43 +392,31 @@ namespace nes {
       return read16(regPC - 2) + 1;
     } else {
       WORD address = read16(regPC - 2);
-      BYTE lsb = read(address);
-      BYTE msb = read((address + 1));
-      return ((WORD)msb << 8) | lsb;
+      return read16(address);
     }
   }
 
   WORD Cpu::getAddress(addressingMode mode) {
-    if (mode == addressingMode::immediate) {
+    if (mode == addressingMode::immediate)
       return immediateAddressing();
-    }
-    if (mode == addressingMode::zeroPage) {
+    if (mode == addressingMode::zeroPage)
       return zeroPageAddressing();
-    }
-    if (mode == addressingMode::zeroPageX) {
+    if (mode == addressingMode::zeroPageX)
       return zeroPageIndexedAddressing_X();
-    }
-    if (mode == addressingMode::zeroPageY) {
+    if (mode == addressingMode::zeroPageY)
       return zeroPageIndexedAddressing_Y();
-    }
-    if (mode == addressingMode::absolute) {
+    if (mode == addressingMode::absolute)
       return absoluteAddressing();
-    }
-    if (mode == addressingMode::absoluteX) {
+    if (mode == addressingMode::absoluteX)
       return absoluteIndexedAddressing_X();
-    }
-    if (mode == addressingMode::absoluteY) {
+    if (mode == addressingMode::absoluteY)
       return absoluteIndexedAddressing_Y();
-    }
-    if (mode == addressingMode::indirectX) {
+    if (mode == addressingMode::indirectX)
       return indexedInderectAddressing();
-    }
-    if (mode == addressingMode::indirectY) {
+    if (mode == addressingMode::indirectY)
       return indirectIndexedAddressing();
-    }
-    if (mode == addressingMode::indirect) {
+    if (mode == addressingMode::indirect)
       return indirectAddressing();
-    }
     return -1;
   }
 
@@ -508,15 +496,15 @@ namespace nes {
   void Cpu::NOP(addressingMode mode) {
     getAddress(mode);
     logStatus(mode);
-    if (mode == addressingMode::immediate) {
+    if (mode == addressingMode::immediate)
       cycles = 2;
-    } else if (mode == addressingMode::zeroPage) {
+    else if (mode == addressingMode::zeroPage)
       cycles = 3;
-    } else if (mode == addressingMode::zeroPageX) {
+    else if (mode == addressingMode::zeroPageX)
       cycles = 4;
-    } else if (mode == addressingMode::implied) {
+    else if (mode == addressingMode::implied)
       cycles = 2;
-    }
+
   }
 
   void Cpu::PHP(addressingMode mode) {
@@ -548,25 +536,25 @@ namespace nes {
   void Cpu::ORA(addressingMode mode) {
     WORD address = getAddress(mode);
     logStatus(mode);
-    if (mode == addressingMode::immediate) {
+    if (mode == addressingMode::immediate)
       cycles = 2;
-    } else if (mode == addressingMode::zeroPage) {
+    else if (mode == addressingMode::zeroPage)
       cycles = 3;
-    } else if (mode == addressingMode::zeroPageX) {
+    else if (mode == addressingMode::zeroPageX)
       cycles = 4;
-    } else if (mode == addressingMode::zeroPageY) {
+    else if (mode == addressingMode::zeroPageY)
       cycles = 4;
-    } else if (mode == addressingMode::absolute) {
+    else if (mode == addressingMode::absolute)
       cycles = 4;
-    } else if (mode == addressingMode::absoluteX) {
+    else if (mode == addressingMode::absoluteX)
       cycles = pageCrossed ? 5 : 4;
-    } else if (mode == addressingMode::absoluteY) {
+    else if (mode == addressingMode::absoluteY)
       cycles = pageCrossed ? 5 : 4;
-    } else if (mode == addressingMode::indirectX) {
+    else if (mode == addressingMode::indirectX)
       cycles = 6;
-    } else if (mode == addressingMode::indirectY) {
+    else if (mode == addressingMode::indirectY)
       cycles = pageCrossed ? 6 : 5;
-    }
+
 
     regA |= read(address);
     setZeroFlag(regA);
