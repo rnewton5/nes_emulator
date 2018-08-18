@@ -11,10 +11,12 @@ namespace nes {
     Cpu(CpuBus & bus, InterruptBus & interruptBus);
 
     void reset();
-    void executeNextInstruction();
     bool isStopped();
+    void tick();
 
   private:
+    void executeNextInstruction();
+
     // memory 
     BYTE ram[2048];
 

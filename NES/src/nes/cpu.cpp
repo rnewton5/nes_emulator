@@ -12,12 +12,15 @@ namespace nes {
 #define OVERFLOW_FLAG          0x40
 #define NEGATIVE_FLAG          0x80
 
-#define debug 1
+#define debug 0
 
 #if debug
 #include <stdio.h>
 #endif
 
+  //-----------------------------------------
+  // public methods
+  //-----------------------------------------
   Cpu::Cpu(CpuBus & bus, InterruptBus & interruptBus) {
     this->bus = &bus;
     this->interruptBus = &interruptBus;
@@ -29,6 +32,17 @@ namespace nes {
     regP = 0x34;
     regPC = read16(0xFFFC);
     stopped = false;
+  }
+
+  bool Cpu::isStopped() {
+    return stopped;
+  }
+
+  void Cpu::tick() {
+    if (cycles)
+      cycles--;
+    else
+      executeNextInstruction();
   }
 
   //-----------------------------------------
@@ -59,7 +73,7 @@ namespace nes {
   }
 
   //-----------------------------------------
-  // main function
+  // Gets and executes the next instruction
   //-----------------------------------------
   void Cpu::executeNextInstruction() {
     if (stopped)
@@ -328,9 +342,6 @@ namespace nes {
     };
   }
 
-  bool Cpu::isStopped() {
-    return stopped;
-  }
 
   //-----------------------------------------
   // Addressing modes
