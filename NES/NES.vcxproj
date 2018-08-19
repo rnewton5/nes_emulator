@@ -141,6 +141,7 @@
     <ClCompile Include="src\nes\cartridge\mappers\mapper_000.cpp" />
     <ClCompile Include="src\nes\cartridge\mappers\mapper_001.cpp" />
     <ClCompile Include="src\nes\cartridge\mappers\mapper_factory.cpp" />
+    <ClCompile Include="src\nes\ppu_bus.cpp" />
     <ClCompile Include="src\nes\utils\ines_parser.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
@@ -155,6 +156,7 @@
     <ClInclude Include="include\nes\cartridge\mappers\mapper.h" />
     <ClInclude Include="include\nes\interrupt_bus.h" />
     <ClInclude Include="include\nes\ppu.h" />
+    <ClInclude Include="include\nes\ppu_bus.h" />
     <ClInclude Include="include\nes\utils\ines_parser.h" />
     <ClInclude Include="include\nes\palette.h" />
   </ItemGroup>

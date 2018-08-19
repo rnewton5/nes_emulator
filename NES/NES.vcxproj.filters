@@ -48,6 +48,9 @@
     <ClCompile Include="src\nes\palette.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\nes\ppu_bus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\nes\cartridge\mappers\mapper.h">
@@ -84,6 +87,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\nes\palette.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\nes\ppu_bus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
