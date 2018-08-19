@@ -16,9 +16,9 @@ namespace nes {
   void Mapper000::write(WORD address, BYTE value, Cartridge * cartridge) {
     if (address > ROM_STARTING_ADDRESS)
       return;
-    if (address > RAM_STARTING_ADDRESS)
+    else if (address > RAM_STARTING_ADDRESS)
       cartridge->getPrgRam()[address - RAM_STARTING_ADDRESS] = value;
-    if (address > CHR_STARTING_ADDRESS && cartridge->hasChrRam())
+    else if (address > CHR_STARTING_ADDRESS && cartridge->hasChrRam())
       cartridge->getChrMem()[address - CHR_STARTING_ADDRESS] = value;
   }
 
