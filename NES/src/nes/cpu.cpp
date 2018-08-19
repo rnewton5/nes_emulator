@@ -49,27 +49,18 @@ namespace nes {
   // reading and writing
   //-----------------------------------------
   BYTE Cpu::read(WORD address) {
-    if (address < 0x2000)
-      return ram[address % 0x800];
-    else
-      return bus->readByte(address);
+    return bus->readByte(address);
   }
 
   WORD Cpu::read16(WORD address) {
-    if (address < 0x2000) {
-      BYTE lsb = ram[address % 0x800];
-      BYTE msb = ram[(address % 0x800) + 1];
-      return ((WORD)msb << 8) | lsb;
-    } else {
-      return bus->readWord(address);
-    }
+    return bus->readWord(address);
   }
 
   void Cpu::write(WORD address, BYTE value) {
-    if (address < 0x2000)
-      ram[address % 0x800] = value;
-    else
-      bus->write(address, value);
+    // TODO: check cycles
+    if (address = 0x4014)
+      cycles += 512;
+    bus->write(address, value);
   }
 
   //-----------------------------------------

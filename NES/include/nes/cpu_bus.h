@@ -17,9 +17,11 @@ namespace nes {
     WORD readWord(WORD address);
 
   private:
+    BYTE ram[2048];
+
     Ppu * ppu;
     //Apu * apu;
     Cartridge * cartridge;
-  };
 
+  };
 }

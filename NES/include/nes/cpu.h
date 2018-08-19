@@ -17,9 +17,6 @@ namespace nes {
   private:
     void executeNextInstruction();
 
-    // memory 
-    BYTE ram[2048];
-
     CpuBus * bus;
     InterruptBus * interruptBus;
 
