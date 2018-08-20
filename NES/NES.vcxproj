@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\nes\display.cpp" />
     <ClCompile Include="src\nes\palette.cpp" />
     <ClCompile Include="src\nes\cpu_bus.cpp" />
     <ClCompile Include="src\nes\interrupt_bus.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="include\nes\cartridge\mappers\mapper_001.h" />
     <ClInclude Include="include\nes\cartridge\mappers\mapper_factory.h" />
     <ClInclude Include="include\nes\cartridge\mappers\mapper.h" />
+    <ClInclude Include="include\nes\display.h" />
     <ClInclude Include="include\nes\interrupt_bus.h" />
     <ClInclude Include="include\nes\ppu.h" />
     <ClInclude Include="include\nes\ppu_bus.h" />
