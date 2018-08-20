@@ -14,8 +14,8 @@ namespace nes {
   void CpuBus::write(WORD address, BYTE value) {
     if (address == 0x4014) {
       for (int i = 0; i < 256; i++) {
-        WORD oamAddress = (WORD)value * 0x0100;
-        ppu->writeToOam(i, readByte(oamAddress));
+        WORD oamAddress = ((WORD)value * 0x0100) + i;
+        ppu->writeToOam(i, read(oamAddress));
       }
       return;
     }
@@ -31,7 +31,7 @@ namespace nes {
       cartridge->write(address, value);
   }
 
-  BYTE CpuBus::readByte(WORD address) {
+  BYTE CpuBus::read(WORD address) {
     if (address < 0x2000)
       return ram[address % 0x800];
     if (address < 0x4000)
@@ -42,9 +42,9 @@ namespace nes {
     return cartridge->read(address);
   }
 
-  WORD CpuBus::readWord(WORD address) {
-    WORD lsb = readByte(address);
-    WORD msb = readByte(address + 1);
+  WORD CpuBus::read16(WORD address) {
+    WORD lsb = read(address);
+    WORD msb = read(address + 1);
     return (msb << 8) | lsb;
   }
 

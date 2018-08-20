@@ -13,8 +13,8 @@ namespace nes {
     CpuBus(Ppu & ppu, Cartridge & cartridge);
 
     void write(WORD address, BYTE value);
-    BYTE readByte(WORD address);
-    WORD readWord(WORD address);
+    BYTE read(WORD address);
+    WORD read16(WORD address);
 
   private:
     BYTE ram[2048];
