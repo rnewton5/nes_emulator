@@ -49,11 +49,11 @@ namespace nes {
   // reading and writing
   //-----------------------------------------
   BYTE Cpu::read(WORD address) {
-    return bus->readByte(address);
+    return bus->read(address);
   }
 
   WORD Cpu::read16(WORD address) {
-    return bus->readWord(address);
+    return bus->read16(address);
   }
 
   void Cpu::write(WORD address, BYTE value) {
