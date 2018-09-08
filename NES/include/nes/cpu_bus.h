@@ -23,5 +23,7 @@ namespace nes {
     //Apu * apu;
     Cartridge * cartridge;
 
+    BYTE readFromPpu(WORD address);
+    void writeToPpu(WORD address, BYTE value);
   };
 }
