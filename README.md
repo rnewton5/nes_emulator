@@ -1,1 +1,3 @@
 # nes_emulator
+
+Not done yet. Hopefully I'll finish this eventually...
