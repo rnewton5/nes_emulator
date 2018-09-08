@@ -29,9 +29,11 @@ namespace nes {
 
   void Cpu::reset() {
     regSP = STACK_UPPER_BOUND;
-    regP = 0x34;
-    regPC = read16(0xFFFC);
+    regP = 0x24;
+    //regPC = read16(0xFFFC);
+    regPC = 0xC000;
     stopped = false;
+    ppuCycles = 0;
   }
 
   bool Cpu::isStopped() {
@@ -39,10 +41,14 @@ namespace nes {
   }
 
   void Cpu::tick() {
-    if (cycles)
+    if (cycles) {
       cycles--;
-    else
+      ppuCycles += 3;
+      ppuCycles %= 341;
+    }
+    else {
       executeNextInstruction();
+    }
   }
 
   //-----------------------------------------
@@ -58,7 +64,7 @@ namespace nes {
 
   void Cpu::write(WORD address, BYTE value) {
     // TODO: check cycles
-    if (address = 0x4014)
+    if (address == 0x4014)
       cycles += 512;
     bus->write(address, value);
   }
@@ -86,7 +92,7 @@ namespace nes {
       case 0x09: ORA(addressingMode::immediate);   break;
       case 0x0A: ASL(addressingMode::implied);     break;
       case 0x0B: ANC(addressingMode::immediate);   break;
-      case 0x0C: NOP(addressingMode::absoluteX);   break;
+      case 0x0C: NOP(addressingMode::absolute);    break;
       case 0x0D: ORA(addressingMode::absolute);    break;
       case 0x0E: ASL(addressingMode::absolute);    break;
       case 0x0F: SLO(addressingMode::absolute);    break;
@@ -345,7 +351,7 @@ namespace nes {
   WORD Cpu::indirectIndexedAddressing() {
     BYTE arg = read(regPC++);
     WORD address = read(arg) + read((arg + 1) % 256) * 256;
-    if ((BYTE)address + regY < regY)
+    if (((address + regY) & 0xFF00) != (address & 0xFF00))
       pageCrossed = true;
     return address + regY;
   }
@@ -371,14 +377,14 @@ namespace nes {
 
   WORD Cpu::absoluteIndexedAddressing_X() {
     WORD address = absoluteAddressing();
-    if ((BYTE)address + regX < regX)
+    if (((address + regX) & 0xFF00) != (address & 0xFF00))
       pageCrossed = true;
     return address + regX;
   }
 
   WORD Cpu::absoluteIndexedAddressing_Y() {
     WORD address = absoluteAddressing();
-    if ((BYTE)address + regY < regY)
+    if (((address + regY) & 0xFF00) != (address & 0xFF00))
       pageCrossed = true;
     return address + regY;
   }
@@ -506,6 +512,10 @@ namespace nes {
       cycles = 4;
     else if (mode == addressingMode::implied)
       cycles = 2;
+    else if (mode == addressingMode::absolute)
+      cycles = 4;
+    else if (mode == addressingMode::absoluteX)
+      cycles = pageCrossed ? 5 : 4;
 
   }
 
@@ -603,7 +613,7 @@ namespace nes {
     else if (mode == addressingMode::zeroPageY)
       cycles = 6;
     else if (mode == addressingMode::absolute)
-      cycles = 7;
+      cycles = 6;
     else if (mode == addressingMode::absoluteX)
       cycles = 7;
     else if (mode == addressingMode::absoluteY)
@@ -613,7 +623,6 @@ namespace nes {
     else if (mode == addressingMode::indirectY)
       cycles = 8;
 
-    // maybe we need to swap memory[address] and regA
     setCarryFlag(read(address) & 0X80);
 
     write(address, read(address) << 1);
@@ -621,8 +630,6 @@ namespace nes {
     regA |= read(address);
 
     setZeroFlag(read(address));
-    //setNegativeFlag(read(address) & 0x80);
-
   }
 
   void Cpu::ANC(addressingMode mode) {
@@ -826,10 +833,10 @@ namespace nes {
       cycles = pageCrossed ? 5 : 4;
     else if (mode == addressingMode::absoluteY)
       cycles = pageCrossed ? 5 : 4;
-    else if (mode = addressingMode::indirectX)
+    else if (mode == addressingMode::indirectX)
       cycles = 6;
     else if (mode = addressingMode::indirectY)
-      cycles = pageCrossed ? 6 : 4;
+      cycles = pageCrossed ? 6 : 5;
 
     regA ^= read(address);
     setNegativeFlag(regA);
@@ -1133,7 +1140,7 @@ namespace nes {
     logStatus(mode);
     if (mode == addressingMode::zeroPage)
       cycles = 3;
-    else if (mode == addressingMode::zeroPageX)
+    else if (mode == addressingMode::zeroPageY)
       cycles = 4;
     else if (mode == addressingMode::absolute)
       cycles = 4;
@@ -1386,6 +1393,7 @@ namespace nes {
   }
 
   void Cpu::CLD(addressingMode mode) {
+    cycles = 2;
     logStatus(mode);
     regP &= ~DECIMAL_MODE_FLAG;
   }
@@ -1602,6 +1610,10 @@ namespace nes {
     regA = (temp & 0xff);
   }
 
+  // This method is for debugging with the NESTEST log.
+  // http://www.qmtpro.com/~nes/misc/nestest.log
+  // Remove the disassebly from the log before comparing this output to it.
+  // To enable logging, set the debug flag to 1 at the top of this file.
   void Cpu::logStatus(addressingMode mode) {
 #if debug
     if (mode == addressingMode::immediate) {
@@ -1652,7 +1664,8 @@ namespace nes {
     printf("X:%02X ", regX);
     printf("Y:%02X ", regY);
     printf("P:%02X ", regP);
-    printf("SP:%02X", (BYTE)regSP);
+    printf("SP:%02X ", (BYTE)regSP);
+    printf("CYC:%*d", 3, ppuCycles);
     printf("\n");
 #endif
   }
