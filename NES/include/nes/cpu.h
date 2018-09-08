@@ -36,6 +36,7 @@ namespace nes {
     int cycles;
     bool stopped;
     bool pageCrossed;
+    int ppuCycles;
 
     // addressing modes
     enum addressingMode {
