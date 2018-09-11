@@ -12,9 +12,10 @@ namespace nes {
 #define OVERFLOW_FLAG          0x40
 #define NEGATIVE_FLAG          0x80
 
-#define debug 0
+#define NESTEST_START 0
+#define LOGGING 0
 
-#if debug
+#if LOGGING
 #include <stdio.h>
 #endif
 
@@ -30,8 +31,11 @@ namespace nes {
   void Cpu::reset() {
     regSP = STACK_UPPER_BOUND;
     regP = 0x24;
-    //regPC = read16(0xFFFC);
+#if NESTEST_START 
     regPC = 0xC000;
+#else 
+    regPC = read16(0xFFFC);
+#endif
     stopped = false;
     ppuCycles = 0;
   }
@@ -1615,7 +1619,7 @@ namespace nes {
   // Remove the disassebly from the log before comparing this output to it.
   // To enable logging, set the debug flag to 1 at the top of this file.
   void Cpu::logStatus(addressingMode mode) {
-#if debug
+#if LOGGING
     if (mode == addressingMode::immediate) {
       printf("%04X  ", regPC - 2);
       printf("%02X %02X     ", read(regPC - 2), read(regPC - 1));
