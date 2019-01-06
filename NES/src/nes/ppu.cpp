@@ -21,6 +21,8 @@ namespace nes {
     regPpuData = 0x00;   // $00
     latch = 0x00;        // latch cleared
     writeToggle = true;
+    scanLineNum = 261;
+    pixelNum = 0;
   }
 
   void Ppu::reset() {
@@ -33,6 +35,20 @@ namespace nes {
     regPpuData = 0x00;              // $00
     latch = 0x00;                   // latch cleared
     writeToggle = true;
+    scanLineNum = 261;
+    pixelNum = 0;
+  }
+
+  void Ppu::tick() {
+    render();
+
+    // TODO: these values are for NTSC systems. Ideally, we should
+    //  check the region of the game and use the appropriate values.
+    scanLineNum++;
+    scanLineNum %= 262;
+
+    pixelNum++;
+    pixelNum %= 341;
   }
 
   void Ppu::writeCtrl(BYTE value) {

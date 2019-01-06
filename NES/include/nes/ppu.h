@@ -18,6 +18,8 @@ namespace nes {
     void reset();
     void init();
 
+    void tick();
+
     void writeCtrl(BYTE value);
     void writeMask(BYTE value);
     void writeOamAddr(BYTE value);
@@ -55,6 +57,9 @@ namespace nes {
 
     BYTE latch;
     bool writeToggle; 
+    int scanLineNum;
+    int pixelNum;
+    int frameNum;
 
     void render();
   };
