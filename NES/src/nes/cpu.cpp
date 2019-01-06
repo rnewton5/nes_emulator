@@ -45,7 +45,7 @@ namespace nes {
   }
 
   void Cpu::tick() {
-    if (cycles) {
+    if (cycles > 0) {
       cycles--;
       ppuCycles += 3;
       ppuCycles %= 341;
