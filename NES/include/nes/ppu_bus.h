@@ -27,5 +27,8 @@ namespace nes {
     Cartridge * cartridge;
 
     void writeToPalette(WORD address, BYTE value);
+
+    int getPaletteIndex(WORD address);
+    int getRamIndex(WORD address);
   };
 }
