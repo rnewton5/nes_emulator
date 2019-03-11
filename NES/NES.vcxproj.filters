@@ -54,6 +54,9 @@
     <ClCompile Include="src\nes\display.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\nes\nes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\nes\cartridge\mappers\mapper.h">
@@ -74,28 +77,31 @@
     <ClInclude Include="include\nes\utils\ines_parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\nes\cpu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\nes\ppu.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\nes\common\globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\nes\interrupt_bus.h">
+    <ClInclude Include="include\nes\cpu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\nes\cpu_bus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\nes\display.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\nes\interrupt_bus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="include\nes\palette.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\nes\ppu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\nes\ppu_bus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\nes\display.h">
+    <ClInclude Include="include\nes\nes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

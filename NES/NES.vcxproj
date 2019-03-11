@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\nes\display.cpp" />
+    <ClCompile Include="src\nes\nes.cpp" />
     <ClCompile Include="src\nes\palette.cpp" />
     <ClCompile Include="src\nes\cpu_bus.cpp" />
     <ClCompile Include="src\nes\interrupt_bus.cpp" />
@@ -147,6 +148,7 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\nes\nes.h" />
     <ClInclude Include="include\nes\cpu_bus.h" />
     <ClInclude Include="include\nes\cartridge\cartridge.h" />
     <ClInclude Include="include\nes\common\globals.h" />
