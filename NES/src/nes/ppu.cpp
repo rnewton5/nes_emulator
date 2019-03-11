@@ -2,9 +2,10 @@
 
 namespace nes {
 
-  Ppu::Ppu(PpuBus & bus, Display & display ,InterruptBus & interruptBus) {
+  Ppu::Ppu(PpuBus bus, Display & display, InterruptBus & interruptBus) :
+    bus(bus)
+  {
     this->interruptBus = &interruptBus;
-    this->bus = &bus;
     this->palette = Palette();
     init();
   }
@@ -23,6 +24,7 @@ namespace nes {
     writeToggle = true;
     scanLineNum = 261;
     pixelNum = 0;
+    cycles = 0;
   }
 
   void Ppu::reset() {
@@ -37,6 +39,30 @@ namespace nes {
     writeToggle = true;
     scanLineNum = 261;
     pixelNum = 0;
+  }
+
+  BYTE Ppu::read(WORD address) {
+    address = (address % 0x2008) + 0x2000;
+    switch (address) {
+      case 0x2002: return readStatus();
+      case 0x2004: return readOamData();
+      case 0x2007: return readData();
+      default: return readLatch();
+    }
+  }
+
+  void Ppu::write(WORD address, BYTE value) {
+    address = (address % 0x2008) + 0x2000;
+    switch (address) {
+      case 0x2000: writeCtrl(value);    break;
+      case 0x2001: writeMask(value);    break;
+      case 0x2003: writeOamAddr(value); break;
+      case 0x2004: writeOamData(value); break;
+      case 0x2005: writeScroll(value);  break;
+      case 0x2006: writeAddr(value);    break;
+      case 0x2007: writeData(value);    break;
+      default: writeLatch(value);
+    }
   }
 
   void Ppu::tick() {
@@ -88,7 +114,7 @@ namespace nes {
   }
 
   void Ppu::writeData(BYTE value) {
-    bus->write(regPpuAddr, value);
+    bus.write(regPpuAddr, value);
     if ((regPpuCtrl & 0x4) != 0)
       regPpuAddr += 32;
     else
@@ -113,7 +139,7 @@ namespace nes {
   }
 
   BYTE Ppu::readData() {
-    regPpuData = bus->read(regPpuAddr);
+    regPpuData = bus.read(regPpuAddr);
     if ((regPpuCtrl & 0x4) != 0)
       regPpuAddr += 32;
     else

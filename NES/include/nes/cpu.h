@@ -8,7 +8,7 @@ namespace nes {
 
   class Cpu {
   public:
-    Cpu(CpuBus & bus, InterruptBus & interruptBus);
+    Cpu(CpuBus bus, InterruptBus & interruptBus);
 
     void reset();
     bool isStopped();
@@ -17,7 +17,7 @@ namespace nes {
   private:
     void executeNextInstruction();
 
-    CpuBus * bus;
+    CpuBus bus;
     InterruptBus * interruptBus;
 
     // These map addresses accordingly
@@ -36,7 +36,6 @@ namespace nes {
     int cycles;
     bool stopped;
     bool pageCrossed;
-    int ppuCycles;
 
     // addressing modes
     enum addressingMode {
@@ -157,6 +156,7 @@ namespace nes {
     void ISC(addressingMode mode);
 
     // for debugging
+    int ppuCycles;
     void logStatus(addressingMode mode);
   };
 

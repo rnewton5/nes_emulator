@@ -22,8 +22,9 @@ namespace nes {
   //-----------------------------------------
   // public methods
   //-----------------------------------------
-  Cpu::Cpu(CpuBus & bus, InterruptBus & interruptBus) {
-    this->bus = &bus;
+  Cpu::Cpu(CpuBus bus, InterruptBus & interruptBus) :
+    bus(bus)
+  {
     this->interruptBus = &interruptBus;
     reset();
   }
@@ -59,18 +60,18 @@ namespace nes {
   // reading and writing
   //-----------------------------------------
   BYTE Cpu::read(WORD address) {
-    return bus->read(address);
+    return bus.read(address);
   }
 
   WORD Cpu::read16(WORD address) {
-    return bus->read16(address);
+    return bus.read16(address);
   }
 
   void Cpu::write(WORD address, BYTE value) {
     // TODO: check cycles
     if (address == 0x4014)
       cycles += 512;
-    bus->write(address, value);
+    bus.write(address, value);
   }
 
   //-----------------------------------------
