@@ -22,10 +22,10 @@ namespace nes {
     CpuBus bus;
     InterruptBus * interruptBus;
 
-    // These map addresses accordingly
-    BYTE read(WORD address);
-    WORD read16(WORD address);
-    void write(WORD address, BYTE value);
+    // read from and write to the cpu bus
+    BYTE readBus(WORD address);
+    WORD readBus16(WORD address);
+    void writeBus(WORD address, BYTE value);
 
     // registers
     WORD regPC; // program counter

@@ -35,7 +35,7 @@ namespace nes {
 #if NESTEST_START 
     regPC = 0xC000;
 #else 
-    regPC = read16(0xFFFC);
+    regPC = readBus16(0xFFFC);
 #endif
     stopped = false;
     ppuCycles = 0;
@@ -59,15 +59,15 @@ namespace nes {
   //-----------------------------------------
   // reading and writing
   //-----------------------------------------
-  BYTE Cpu::read(WORD address) {
+  BYTE Cpu::readBus(WORD address) {
     return bus.read(address);
   }
 
-  WORD Cpu::read16(WORD address) {
+  WORD Cpu::readBus16(WORD address) {
     return bus.read16(address);
   }
 
-  void Cpu::write(WORD address, BYTE value) {
+  void Cpu::writeBus(WORD address, BYTE value) {
     // TODO: check cycles
     if (address == 0x4014)
       cycles += 512;
@@ -81,7 +81,7 @@ namespace nes {
     if (stopped)
       return;
 
-    BYTE opcode = read(regPC++);
+    BYTE opcode = readBus(regPC++);
     pageCrossed = false;
 
     switch (opcode) {
@@ -349,35 +349,35 @@ namespace nes {
   // Addressing modes
   //-----------------------------------------
   WORD Cpu::indexedInderectAddressing() {
-    BYTE arg = read(regPC++);
-    return read((arg + regX) % 256) + read((arg + regX + 1) % 256) * 256;
+    BYTE arg = readBus(regPC++);
+    return readBus((arg + regX) % 256) + readBus((arg + regX + 1) % 256) * 256;
   }
 
   WORD Cpu::indirectIndexedAddressing() {
-    BYTE arg = read(regPC++);
-    WORD address = read(arg) + read((arg + 1) % 256) * 256;
+    BYTE arg = readBus(regPC++);
+    WORD address = readBus(arg) + readBus((arg + 1) % 256) * 256;
     if (((address + regY) & 0xFF00) != (address & 0xFF00))
       pageCrossed = true;
     return address + regY;
   }
 
   WORD Cpu::zeroPageAddressing() {
-    return read(regPC++);
+    return readBus(regPC++);
   }
 
   WORD Cpu::zeroPageIndexedAddressing_X() {
-    BYTE arg = read(regPC++);
+    BYTE arg = readBus(regPC++);
     return (arg + regX) % 256;
   }
 
   WORD Cpu::zeroPageIndexedAddressing_Y() {
-    BYTE arg = read(regPC++);
+    BYTE arg = readBus(regPC++);
     return (arg + regY) % 256;
   }
 
   WORD Cpu::absoluteAddressing() {
     regPC += 2;
-    return read16(regPC - 2);
+    return readBus16(regPC - 2);
   }
 
   WORD Cpu::absoluteIndexedAddressing_X() {
@@ -401,11 +401,11 @@ namespace nes {
 
   WORD Cpu::indirectAddressing() {
     regPC += 2;
-    if (read(regPC - 2) == 0xFF) {
-      return read16(regPC - 2) + 1;
+    if (readBus(regPC - 2) == 0xFF) {
+      return readBus16(regPC - 2) + 1;
     } else {
-      WORD address = read16(regPC - 2);
-      return read16(address);
+      WORD address = readBus16(regPC - 2);
+      return readBus16(address);
     }
   }
 
@@ -485,11 +485,11 @@ namespace nes {
   // stack operations
   //-----------------------------------------
   void Cpu::push(BYTE arg) {
-    write(regSP--, arg);
+    writeBus(regSP--, arg);
   }
 
   BYTE Cpu::pull() {
-    return read(++regSP);
+    return readBus(++regSP);
   }
 
   //-----------------------------------------
@@ -502,7 +502,7 @@ namespace nes {
     setBreakFlag(true);
     push(regP | BREAK_FLAG);
     setInterruptDisableFlag(true);
-    regPC = read16(0xFFFE);
+    regPC = readBus16(0xFFFE);
     cycles = 7;
   }
 
@@ -536,7 +536,7 @@ namespace nes {
     cycles = 2;
     if (!(regP & NEGATIVE_FLAG)) {
       WORD oldRegPC = regPC;
-      regPC += (char)read(address);
+      regPC += (char)readBus(address);
       if ((regPC & 0xFF00) == (oldRegPC & 0xFF00))
         cycles += 1;
       else
@@ -573,7 +573,7 @@ namespace nes {
       cycles = pageCrossed ? 6 : 5;
 
 
-    regA |= read(address);
+    regA |= readBus(address);
     setZeroFlag(regA);
     setNegativeFlag(regA);
   }
@@ -601,10 +601,10 @@ namespace nes {
         cycles = 6;
       else if (mode == addressingMode::absoluteX)
         cycles = 7;
-      setCarryFlag(read(address) & 0X80);
-      write(address, read(address) << 1);
-      setZeroFlag(read(address));
-      setNegativeFlag(read(address));
+      setCarryFlag(readBus(address) & 0X80);
+      writeBus(address, readBus(address) << 1);
+      setZeroFlag(readBus(address));
+      setNegativeFlag(readBus(address));
     }
   }
 
@@ -628,13 +628,13 @@ namespace nes {
     else if (mode == addressingMode::indirectY)
       cycles = 8;
 
-    setCarryFlag(read(address) & 0X80);
+    setCarryFlag(readBus(address) & 0X80);
 
-    write(address, read(address) << 1);
+    writeBus(address, readBus(address) << 1);
 
-    regA |= read(address);
+    regA |= readBus(address);
 
-    setZeroFlag(read(address));
+    setZeroFlag(readBus(address));
   }
 
   void Cpu::ANC(addressingMode mode) {
@@ -642,7 +642,7 @@ namespace nes {
     logStatus(mode);
     cycles = 2;
 
-    regA &= read(address);
+    regA &= readBus(address);
 
     regP = (regP & ~CARRY_FLAG) | (regA >> 7);
   }
@@ -665,9 +665,9 @@ namespace nes {
     else if (mode == addressingMode::absolute)
       cycles = 4;
 
-    regP = (regP & ~NEGATIVE_FLAG) | (read(address) & NEGATIVE_FLAG);
-    regP = (regP & ~OVERFLOW_FLAG) | (read(address) & OVERFLOW_FLAG);
-    if (!(regA & read(address)))
+    regP = (regP & ~NEGATIVE_FLAG) | (readBus(address) & NEGATIVE_FLAG);
+    regP = (regP & ~OVERFLOW_FLAG) | (readBus(address) & OVERFLOW_FLAG);
+    if (!(regA & readBus(address)))
       regP |= ZERO_FLAG;
     else
       regP &= ~ZERO_FLAG;
@@ -685,7 +685,7 @@ namespace nes {
     cycles = 2;
     if (regP & NEGATIVE_FLAG) {
       WORD oldRegPC = regPC;
-      regPC += (char)read(address);
+      regPC += (char)readBus(address);
       if ((regPC & 0xFF00) == (oldRegPC & 0xFF00))
         cycles += 1;
       else
@@ -719,7 +719,7 @@ namespace nes {
     else if (mode == addressingMode::indirectY)
       cycles = pageCrossed ? 6 : 5;
 
-    regA &= read(address);
+    regA &= readBus(address);
     setNegativeFlag(regA);
     setZeroFlag(regA);
   }
@@ -743,11 +743,11 @@ namespace nes {
       else if (mode == addressingMode::absoluteX)
         cycles = 7;
 
-      bool carryFlagSet = read(address) & 0x80;
-      write(address, read(address) << 1 | (regP & CARRY_FLAG));
+      bool carryFlagSet = readBus(address) & 0x80;
+      writeBus(address, readBus(address) << 1 | (regP & CARRY_FLAG));
       setCarryFlag(carryFlagSet);
-      setNegativeFlag(read(address));
-      setZeroFlag(read(address));
+      setNegativeFlag(readBus(address));
+      setZeroFlag(readBus(address));
     }
 
   }
@@ -770,13 +770,13 @@ namespace nes {
     else if (mode == addressingMode::indirectY)
       cycles = 8;
 
-    bool carryFlagSet = read(address) & 0x80;
-    write(address, (read(address) << 1) | (regP & CARRY_FLAG));
+    bool carryFlagSet = readBus(address) & 0x80;
+    writeBus(address, (readBus(address) << 1) | (regP & CARRY_FLAG));
     //write(address, read(address) & regA);
-    regA &= read(address);
+    regA &= readBus(address);
     setCarryFlag(carryFlagSet);
-    setNegativeFlag(read(address));
-    setZeroFlag(read(address));
+    setNegativeFlag(readBus(address));
+    setZeroFlag(readBus(address));
   }
 
   void Cpu::RTI(addressingMode mode) {
@@ -809,7 +809,7 @@ namespace nes {
     cycles = 2;
     if (!(regP & OVERFLOW_FLAG)) {
       WORD oldRegPC = regPC;
-      regPC += (char)read(address);
+      regPC += (char)readBus(address);
       if ((regPC & 0xFF00) == (oldRegPC & 0xFF00))
         cycles += 1;
       else
@@ -843,7 +843,7 @@ namespace nes {
     else if (mode = addressingMode::indirectY)
       cycles = pageCrossed ? 6 : 5;
 
-    regA ^= read(address);
+    regA ^= readBus(address);
     setNegativeFlag(regA);
     setZeroFlag(regA);
   }
@@ -868,10 +868,10 @@ namespace nes {
       else if (mode == addressingMode::absoluteX)
         cycles = 7;
 
-      setCarryFlag(read(address) & CARRY_FLAG);
-      write(address, read(address) >> 1);
-      setZeroFlag(read(address));
-      setNegativeFlag(read(address));
+      setCarryFlag(readBus(address) & CARRY_FLAG);
+      writeBus(address, readBus(address) >> 1);
+      setZeroFlag(readBus(address));
+      setNegativeFlag(readBus(address));
     }
   }
 
@@ -893,9 +893,9 @@ namespace nes {
     else if (mode == addressingMode::indirectY)
       cycles = 8;
 
-    setCarryFlag(read(address) & 0x01);
-    write(address, read(address) >> 1);
-    regA ^= read(address);
+    setCarryFlag(readBus(address) & 0x01);
+    writeBus(address, readBus(address) >> 1);
+    regA ^= readBus(address);
     setZeroFlag(regA);
     setNegativeFlag(regA);
   }
@@ -905,7 +905,7 @@ namespace nes {
     logStatus(mode);
     cycles = 2;
 
-    regA &= read(address);
+    regA &= readBus(address);
 
     setCarryFlag(regA & 0x01);
     regA >>= 1;
@@ -934,7 +934,7 @@ namespace nes {
     cycles = 2;
     if (regP & OVERFLOW_FLAG) {
       WORD oldRegPC = regPC;
-      regPC += (char)read(address);
+      regPC += (char)readBus(address);
       if ((regPC & 0xFF00) == (oldRegPC & 0xFF00))
         cycles += 1;
       else
@@ -970,15 +970,15 @@ namespace nes {
 
 
     if (regP & DECIMAL_MODE_FLAG && false) {
-      BYTE result = regA + ((read(address) % 16) + ((read(address) / 16) % 16) * 10) + (regP & CARRY_FLAG ? 1 : 0);
-      setOverflowFlag((regA ^ result) & (read(address) ^ result) & 0x80);
+      BYTE result = regA + ((readBus(address) % 16) + ((readBus(address) / 16) % 16) * 10) + (regP & CARRY_FLAG ? 1 : 0);
+      setOverflowFlag((regA ^ result) & (readBus(address) ^ result) & 0x80);
       regA += result;
       setCarryFlag(regA > 0x99);
     } else {
-      BYTE result = regA + read(address) + (regP & CARRY_FLAG ? 1 : 0);
-      setOverflowFlag((regA ^ result) & (read(address) ^ result) & 0x80);
+      BYTE result = regA + readBus(address) + (regP & CARRY_FLAG ? 1 : 0);
+      setOverflowFlag((regA ^ result) & (readBus(address) ^ result) & 0x80);
       regA = result;
-      setCarryFlag(regA < read(address));
+      setCarryFlag(regA < readBus(address));
     }
     setZeroFlag(regA);
     setNegativeFlag(regA);
@@ -1005,11 +1005,11 @@ namespace nes {
       else if (mode == addressingMode::absoluteX)
         cycles = 7;
 
-      bool shouldSetCarry = read(address) & 0x01;
-      write(address, (read(address) >> 1) | ((regP & CARRY_FLAG) << 7));
+      bool shouldSetCarry = readBus(address) & 0x01;
+      writeBus(address, (readBus(address) >> 1) | ((regP & CARRY_FLAG) << 7));
       setCarryFlag(shouldSetCarry);
-      setNegativeFlag(read(address));
-      setZeroFlag(read(address));
+      setNegativeFlag(readBus(address));
+      setZeroFlag(readBus(address));
     }
   }
 
@@ -1031,14 +1031,14 @@ namespace nes {
     else if (mode == addressingMode::indirectY)
       cycles = 8;
 
-    write(address, (read(address) >> 1) | ((regP & CARRY_FLAG) << 7));
+    writeBus(address, (readBus(address) >> 1) | ((regP & CARRY_FLAG) << 7));
 
     if (regP & DECIMAL_MODE_FLAG & false) {
-      regA += ((read(address) % 16) + ((read(address) / 16) % 16) * 10) + (regP & CARRY_FLAG ? 1 : 0);
+      regA += ((readBus(address) % 16) + ((readBus(address) / 16) % 16) * 10) + (regP & CARRY_FLAG ? 1 : 0);
       setCarryFlag(regA > 0x99);
     } else {
-      regA += read(address) + 1; // (regP & CARRY_FLAG ? 1 : 0);
-      setCarryFlag(regA < read(address));
+      regA += readBus(address) + 1; // (regP & CARRY_FLAG ? 1 : 0);
+      setCarryFlag(regA < readBus(address));
     }
     setZeroFlag(regA);
     setNegativeFlag(regA);
@@ -1050,7 +1050,7 @@ namespace nes {
     logStatus(mode);
     cycles = 2;
 
-    regA &= read(address);
+    regA &= readBus(address);
     regA >>= 1;
     if (regA & 0x10 && regA & 0x20) {
       setCarryFlag(true);
@@ -1079,7 +1079,7 @@ namespace nes {
     else if (mode == addressingMode::absolute)
       cycles = 4;
 
-    write(address, regY);
+    writeBus(address, regY);
   }
 
   void Cpu::DEY(addressingMode mode) {
@@ -1096,7 +1096,7 @@ namespace nes {
     cycles = 2;
     if (!(regP & CARRY_FLAG)) {
       WORD oldRegPC = regPC;
-      regPC += (char)read(address);
+      regPC += (char)readBus(address);
       if ((regPC & 0xFF00) == (oldRegPC & 0xFF00))
         cycles += 1;
       else
@@ -1116,7 +1116,7 @@ namespace nes {
     WORD address = getAddress(mode);
     logStatus(mode);
     cycles = 5;
-    write(address, regY & (read(regPC - 1) + 1));
+    writeBus(address, regY & (readBus(regPC - 1) + 1));
   }
 
   void Cpu::STA(addressingMode mode) {
@@ -1137,7 +1137,7 @@ namespace nes {
     else if (mode == addressingMode::indirectY)
       cycles = 6;
 
-    write(address, regA);
+    writeBus(address, regA);
   }
 
   void Cpu::STX(addressingMode mode) {
@@ -1150,7 +1150,7 @@ namespace nes {
     else if (mode == addressingMode::absolute)
       cycles = 4;
 
-    write(address, regX);
+    writeBus(address, regX);
   }
 
   void Cpu::TXA(addressingMode mode) {
@@ -1174,7 +1174,7 @@ namespace nes {
     WORD address = getAddress(mode);
     logStatus(mode);
     cycles = 5;
-    write(address, regX & (read(regPC - 1) + 1));
+    writeBus(address, regX & (readBus(regPC - 1) + 1));
   }
 
   void Cpu::SAX(addressingMode mode) {
@@ -1189,7 +1189,7 @@ namespace nes {
     else if (mode == addressingMode::absolute)
       cycles = 4;
 
-    write(address, regA & regX);
+    writeBus(address, regA & regX);
   }
 
   void Cpu::XAA(addressingMode mode) {
@@ -1198,7 +1198,7 @@ namespace nes {
     cycles = 2;
 
     regA = regX;
-    regA &= read(address);
+    regA &= readBus(address);
   }
 
   void Cpu::AHX(addressingMode mode) {
@@ -1209,7 +1209,7 @@ namespace nes {
     else if (mode == addressingMode::indirectY)
       cycles = 6;
 
-    write(address, regA & regX & (read(regPC - 1) + 1));
+    writeBus(address, regA & regX & (readBus(regPC - 1) + 1));
   }
 
   void Cpu::TAS(addressingMode mode) {
@@ -1217,7 +1217,7 @@ namespace nes {
     logStatus(mode);
     cycles = 5;
 
-    write(address, regA & regX & (read(regPC - 1) + 1));
+    writeBus(address, regA & regX & (readBus(regPC - 1) + 1));
   }
 
   void Cpu::LDY(addressingMode mode) {
@@ -1234,7 +1234,7 @@ namespace nes {
     else if (mode == addressingMode::absoluteX)
       cycles = pageCrossed ? 5 : 4;
 
-    regY = read(address);
+    regY = readBus(address);
     setNegativeFlag(regY);
     setZeroFlag(regY);
   }
@@ -1254,7 +1254,7 @@ namespace nes {
     cycles = 2;
     if (regP & CARRY_FLAG) {
       WORD oldRegPC = regPC;
-      regPC += (char)read(address);
+      regPC += (char)readBus(address);
       if ((regPC & 0xFF00) == (oldRegPC & 0xFF00))
         cycles += 1;
       else
@@ -1288,7 +1288,7 @@ namespace nes {
     else if (mode == addressingMode::indirectY)
       cycles = pageCrossed ? 6 : 5;
 
-    regA = read(address);
+    regA = readBus(address);
     setNegativeFlag(regA & 0x80);
     setZeroFlag(regA);
   }
@@ -1307,7 +1307,7 @@ namespace nes {
     else if (mode == addressingMode::absoluteY)
       cycles = pageCrossed ? 5 : 4;
 
-    regX = read(address);
+    regX = readBus(address);
     setNegativeFlag(regX);
     setZeroFlag(regX);
   }
@@ -1344,7 +1344,7 @@ namespace nes {
     else if (mode == addressingMode::indirectY)
       cycles = pageCrossed ? 6 : 5;;
 
-    regA = read(address);
+    regA = readBus(address);
     regX = regA;
     setZeroFlag(regA);
     setNegativeFlag(regA);
@@ -1355,7 +1355,7 @@ namespace nes {
     logStatus(mode);
     cycles = pageCrossed ? 5 : 4;
 
-    regA = regX = regSP &= read(address);
+    regA = regX = regSP &= readBus(address);
     setNegativeFlag(regA);
     setZeroFlag(regA);
   }
@@ -1370,9 +1370,9 @@ namespace nes {
     else if (mode == addressingMode::absolute)
       cycles = 4;
 
-    setNegativeFlag(regY - read(address));
-    setZeroFlag(regY - read(address));
-    setCarryFlag(read(address) <= regY);
+    setNegativeFlag(regY - readBus(address));
+    setZeroFlag(regY - readBus(address));
+    setCarryFlag(readBus(address) <= regY);
   }
 
   void Cpu::INY(addressingMode mode) {
@@ -1389,7 +1389,7 @@ namespace nes {
     cycles = 2;
     if (!(regP & ZERO_FLAG)) {
       WORD oldRegPC = regPC;
-      regPC += (char)read(address);
+      regPC += (char)readBus(address);
       if ((regPC & 0xFF00) == (oldRegPC & 0xFF00))
         cycles += 1;
       else
@@ -1423,9 +1423,9 @@ namespace nes {
     else if (mode == addressingMode::indirectY)
       cycles = pageCrossed ? 6 : 5;
 
-    setNegativeFlag(regA - read(address));
-    setZeroFlag(regA - read(address));
-    setCarryFlag(read(address) <= regA);
+    setNegativeFlag(regA - readBus(address));
+    setZeroFlag(regA - readBus(address));
+    setCarryFlag(readBus(address) <= regA);
   }
 
   void Cpu::DEC(addressingMode mode) {
@@ -1440,9 +1440,9 @@ namespace nes {
     else if (mode == addressingMode::absoluteX)
       cycles = 7;
 
-    write(address, read(address) - 1);
-    setZeroFlag(read(address));
-    setNegativeFlag(read(address));
+    writeBus(address, readBus(address) - 1);
+    setZeroFlag(readBus(address));
+    setNegativeFlag(readBus(address));
   }
 
   void Cpu::DEX(addressingMode mode) {
@@ -1471,10 +1471,10 @@ namespace nes {
     else if (mode == addressingMode::indirectY)
       cycles = 8;
 
-    write(address, read(address) - 1);
-    setNegativeFlag(regA - read(address));
-    setZeroFlag(regA - read(address));
-    setCarryFlag(read(address) <= regA);
+    writeBus(address, readBus(address) - 1);
+    setNegativeFlag(regA - readBus(address));
+    setZeroFlag(regA - readBus(address));
+    setCarryFlag(readBus(address) <= regA);
   }
 
   void Cpu::AXS(addressingMode mode) {
@@ -1489,7 +1489,7 @@ namespace nes {
     else if (mode == addressingMode::absolute)
       cycles = 4;
 
-    write(address, regA & regX);
+    writeBus(address, regA & regX);
   }
 
   void Cpu::CPX(addressingMode mode) {
@@ -1502,9 +1502,9 @@ namespace nes {
     else if (mode == addressingMode::absolute)
       cycles = 4;
 
-    setNegativeFlag(regX - read(address));
-    setZeroFlag(regX - read(address));
-    setCarryFlag(read(address) <= regX);
+    setNegativeFlag(regX - readBus(address));
+    setZeroFlag(regX - readBus(address));
+    setCarryFlag(readBus(address) <= regX);
   }
 
   void Cpu::INX(addressingMode mode) {
@@ -1521,7 +1521,7 @@ namespace nes {
     cycles = 2;
     if (regP & ZERO_FLAG) {
       WORD oldRegPC = regPC;
-      regPC += (char)read(address);
+      regPC += (char)readBus(address);
       if ((regPC & 0xFF00) == (oldRegPC & 0xFF00))
         cycles += 1;
       else
@@ -1555,12 +1555,12 @@ namespace nes {
     else if (mode == addressingMode::indirectY)
       cycles = pageCrossed ? 6 : 5;
 
-    unsigned int temp = regA - read(address) - (regP & CARRY_FLAG ? 0 : 1);
+    unsigned int temp = regA - readBus(address) - (regP & CARRY_FLAG ? 0 : 1);
     setNegativeFlag(temp);
     setZeroFlag(temp & 0xff);	/* Sign and Zero are invalid in decimal mode */
-    setOverflowFlag(((regA ^ temp) & 0x80) && ((regA ^ read(address)) & 0x80));
+    setOverflowFlag(((regA ^ temp) & 0x80) && ((regA ^ readBus(address)) & 0x80));
     if (regP & DECIMAL_MODE_FLAG && false) {
-      if (((regA & 0xf) - (regP & CARRY_FLAG ? 0 : 1)) < (read(address) & 0xf)) /* EP */ temp -= 6;
+      if (((regA & 0xf) - (regP & CARRY_FLAG ? 0 : 1)) < (readBus(address) & 0xf)) /* EP */ temp -= 6;
       if (temp > 0x99) temp -= 0x60;
     }
     setCarryFlag(temp < 0x100);
@@ -1579,9 +1579,9 @@ namespace nes {
     else if (mode == addressingMode::absoluteX)
       cycles = 7;
 
-    write(address, read(address) + 1);
-    setZeroFlag(read(address));
-    setNegativeFlag(read(address) & 0x80);
+    writeBus(address, readBus(address) + 1);
+    setZeroFlag(readBus(address));
+    setNegativeFlag(readBus(address) & 0x80);
   }
 
   void Cpu::ISC(addressingMode mode) {
@@ -1602,13 +1602,13 @@ namespace nes {
     else if (mode == addressingMode::indirectY)
       cycles = 8;
 
-    write(address, read(address) + 1);
-    unsigned int temp = regA - read(address) - (regP & CARRY_FLAG ? 0 : 1);
+    writeBus(address, readBus(address) + 1);
+    unsigned int temp = regA - readBus(address) - (regP & CARRY_FLAG ? 0 : 1);
     setNegativeFlag(temp);
     setZeroFlag(temp & 0xff);	/* Sign and Zero are invalid in decimal mode */
-    setOverflowFlag(((regA ^ temp) & 0x80) && ((regA ^ read(address)) & 0x80));
+    setOverflowFlag(((regA ^ temp) & 0x80) && ((regA ^ readBus(address)) & 0x80));
     if (regP & DECIMAL_MODE_FLAG && false) {
-      if (((regA & 0xf) - (regP & CARRY_FLAG ? 0 : 1)) < (read(address) & 0xf)) /* EP */ temp -= 6;
+      if (((regA & 0xf) - (regP & CARRY_FLAG ? 0 : 1)) < (readBus(address) & 0xf)) /* EP */ temp -= 6;
       if (temp > 0x99) temp -= 0x60;
     }
     setCarryFlag(temp < 0x100);
