@@ -18,8 +18,6 @@ namespace nes {
     Display display;
     InterruptBus interruptBus;
     Cartridge cartridge;
-    PpuBus ppuBus;
-    CpuBus cpuBus;
     Ppu ppu;
     Cpu cpu;
   };

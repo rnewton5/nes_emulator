@@ -2,8 +2,8 @@
 
 namespace nes {
 
-  Ppu::Ppu(PpuBus bus, Display & display, InterruptBus & interruptBus) :
-    bus(bus)
+  Ppu::Ppu(Cartridge & cartridge, Display & display, InterruptBus & interruptBus) :
+    bus(cartridge)
   {
     this->interruptBus = &interruptBus;
     this->palette = Palette();

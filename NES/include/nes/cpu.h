@@ -2,13 +2,15 @@
 
 #include <nes/common/globals.h>
 #include <nes/cpu_bus.h>
+#include <nes/cpu.h>
+#include <nes/ppu.h>
 #include <nes/interrupt_bus.h>
 
 namespace nes {
 
   class Cpu {
   public:
-    Cpu(CpuBus & bus, InterruptBus & interruptBus);
+    Cpu(Cartridge & cartridge, Ppu & ppu, InterruptBus & interruptBus);
 
     void reset();
     bool isStopped();

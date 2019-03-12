@@ -4,10 +4,8 @@ namespace nes {
 
   Nes::Nes(std::string file) :
     cartridge(file, interruptBus),
-    ppuBus(cartridge),
-    ppu(ppuBus, display, interruptBus),
-    cpuBus(ppu, cartridge),
-    cpu(cpuBus, interruptBus)
+    ppu(cartridge, display, interruptBus),
+    cpu(cartridge, ppu, interruptBus)
   { }
 
   void Nes::tick() {

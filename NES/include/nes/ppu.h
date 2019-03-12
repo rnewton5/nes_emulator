@@ -12,7 +12,7 @@ namespace nes {
 
   class Ppu {
   public:
-    Ppu(PpuBus bus, Display & display, InterruptBus & interruptBus);
+    Ppu(Cartridge & cartridge, Display & display, InterruptBus & interruptBus);
 
     // https://wiki.nesdev.com/w/index.php/PPU_power_up_state
     void reset();

@@ -12,8 +12,8 @@ namespace nes {
 #define OVERFLOW_FLAG          0x40
 #define NEGATIVE_FLAG          0x80
 
-#define NESTEST_START 0
-#define LOGGING 0
+#define NESTEST_START 1
+#define LOGGING 1
 
 #if LOGGING
 #include <stdio.h>
@@ -22,8 +22,8 @@ namespace nes {
   //-----------------------------------------
   // public methods
   //-----------------------------------------
-  Cpu::Cpu(CpuBus & bus, InterruptBus & interruptBus) :
-    bus(bus)
+  Cpu::Cpu(Cartridge & cartridge, Ppu & ppu, InterruptBus & interruptBus) :
+    bus(ppu, cartridge)
   {
     this->interruptBus = &interruptBus;
     reset();
