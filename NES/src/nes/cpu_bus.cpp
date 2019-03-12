@@ -26,8 +26,7 @@ namespace nes {
     else if (address < 0x4000)
       ppu->write(address, value);
     else if (address < 0x4020)
-      //reserved for apu and io
-      return;
+      return; // TODO: reserved for apu and io
     else
       cartridge->write(address, value);
   }
@@ -38,8 +37,7 @@ namespace nes {
     if (address < 0x4000)
       return ppu->read(address);
     if (address < 0x4020)
-      //reserved for apu and io
-      return 0;
+      return 0; // TODO: reserved for apu and io
     return cartridge->read(address);
   }
 
