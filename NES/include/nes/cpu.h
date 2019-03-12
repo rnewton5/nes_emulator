@@ -1,14 +1,14 @@
 #pragma once
 
-#include <nes\common\globals.h>
-#include <nes\cpu_bus.h>
-#include <nes\interrupt_bus.h>
+#include <nes/common/globals.h>
+#include <nes/cpu_bus.h>
+#include <nes/interrupt_bus.h>
 
 namespace nes {
 
   class Cpu {
   public:
-    Cpu(CpuBus bus, InterruptBus & interruptBus);
+    Cpu(CpuBus & bus, InterruptBus & interruptBus);
 
     void reset();
     bool isStopped();

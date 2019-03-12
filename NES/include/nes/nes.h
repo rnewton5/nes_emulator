@@ -1,8 +1,8 @@
 #pragma once
 
-#include <nes\cartridge\cartridge.h>
-#include <nes\cpu.h>
-#include <nes\ppu.h>
+#include <nes/cartridge/cartridge.h>
+#include <nes/cpu.h>
+#include <nes/ppu.h>
 
 #include <string>
 

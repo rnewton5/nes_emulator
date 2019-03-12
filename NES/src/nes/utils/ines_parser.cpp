@@ -1,4 +1,4 @@
-#include <nes\utils\ines_parser.h>
+#include <nes/utils/ines_parser.h>
 
 #include <fstream>
 #include <iterator>

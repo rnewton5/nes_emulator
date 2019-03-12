@@ -1,7 +1,7 @@
-#include <nes\cartridge\mappers\mapper.h>
-#include <nes\cartridge\mappers\mapper_factory.h>
-#include <nes\cartridge\mappers\mapper_000.h>
-#include <nes\cartridge\mappers\mapper_001.h>
+#include <nes/cartridge/mappers/mapper.h>
+#include <nes/cartridge/mappers/mapper_factory.h>
+#include <nes/cartridge/mappers/mapper_000.h>
+#include <nes/cartridge/mappers/mapper_001.h>
 #include <exception>
 
 namespace nes {

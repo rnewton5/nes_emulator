@@ -1,5 +1,5 @@
-#include <nes\cartridge\mappers\mapper_000.h>
-#include <nes\cartridge\cartridge.h>
+#include <nes/cartridge/mappers/mapper_000.h>
+#include <nes/cartridge/cartridge.h>
 
 namespace nes {
 

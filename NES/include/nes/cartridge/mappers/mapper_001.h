@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nes\cartridge\mappers\mapper.h>
+#include <nes/cartridge/mappers/mapper.h>
 
 namespace nes {
 

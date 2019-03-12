@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nes\common\globals.h>
+#include <nes/common/globals.h>
 
 #include <string>
 #include <cstdint>

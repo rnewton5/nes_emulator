@@ -1,6 +1,6 @@
-#include <nes\cartridge\cartridge.h>
-#include <nes\utils\ines_parser.h>
-#include <nes\cartridge\mappers\mapper_factory.h>
+#include <nes/cartridge/cartridge.h>
+#include <nes/utils/ines_parser.h>
+#include <nes/cartridge/mappers/mapper_factory.h>
 #include <string>
 
 namespace nes {

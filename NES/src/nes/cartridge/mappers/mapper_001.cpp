@@ -1,4 +1,4 @@
-#include <nes\cartridge\mappers\mapper_001.h>
+#include <nes/cartridge/mappers/mapper_001.h>
 
 namespace nes {
 

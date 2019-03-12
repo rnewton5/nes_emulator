@@ -1,5 +1,5 @@
-#include <nes\ppu_bus.h>
-#include <nes\cartridge\cartridge.h>
+#include <nes/ppu_bus.h>
+#include <nes/cartridge/cartridge.h>
 
 namespace nes {
 

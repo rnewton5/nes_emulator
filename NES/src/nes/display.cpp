@@ -1,4 +1,4 @@
-#include <nes\display.h>
+#include <nes/display.h>
 
 namespace nes {
 

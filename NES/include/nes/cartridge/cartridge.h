@@ -1,8 +1,8 @@
 #pragma once
 
-#include <nes\common\globals.h>
-#include <nes\cartridge\mappers\mapper.h>
-#include <nes\interrupt_bus.h>
+#include <nes/common/globals.h>
+#include <nes/cartridge/mappers/mapper.h>
+#include <nes/interrupt_bus.h>
 
 #include <vector>
 

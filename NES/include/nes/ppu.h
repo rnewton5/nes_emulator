@@ -1,10 +1,10 @@
 #pragma once
 
-#include <nes\common\globals.h>
-#include <nes\interrupt_bus.h>
-#include <nes\ppu_bus.h>
-#include <nes\palette.h>
-#include <nes\display.h>
+#include <nes/common/globals.h>
+#include <nes/interrupt_bus.h>
+#include <nes/ppu_bus.h>
+#include <nes/palette.h>
+#include <nes/display.h>
 
 namespace nes {
 

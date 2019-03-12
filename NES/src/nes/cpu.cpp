@@ -1,4 +1,4 @@
-#include <nes\cpu.h>
+#include <nes/cpu.h>
 
 namespace nes {
 
@@ -22,7 +22,7 @@ namespace nes {
   //-----------------------------------------
   // public methods
   //-----------------------------------------
-  Cpu::Cpu(CpuBus bus, InterruptBus & interruptBus) :
+  Cpu::Cpu(CpuBus & bus, InterruptBus & interruptBus) :
     bus(bus)
   {
     this->interruptBus = &interruptBus;
