@@ -12,8 +12,8 @@ namespace nes {
 #define OVERFLOW_FLAG          0x40
 #define NEGATIVE_FLAG          0x80
 
-#define NESTEST_START 1
-#define LOGGING 1
+#define NESTEST_START 0
+#define LOGGING 0
 
 #if LOGGING
 #include <stdio.h>
