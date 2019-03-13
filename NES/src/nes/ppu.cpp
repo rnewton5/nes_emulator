@@ -41,6 +41,18 @@ namespace nes {
     pixelNum = 0;
   }
 
+  void Ppu::tick() {
+    render();
+
+    // TODO: these values are for NTSC systems. Ideally, we should
+    //  check the region of the game and use the appropriate values.
+    scanLineNum++;
+    scanLineNum %= 262;
+
+    pixelNum++;
+    pixelNum %= 341;
+  }
+
   BYTE Ppu::read(WORD address) {
     address = (address % 0x2008) + 0x2000;
     switch (address) {
@@ -63,18 +75,6 @@ namespace nes {
       case 0x2007: writeData(value);    break;
       default: writeLatch(value);
     }
-  }
-
-  void Ppu::tick() {
-    render();
-
-    // TODO: these values are for NTSC systems. Ideally, we should
-    //  check the region of the game and use the appropriate values.
-    scanLineNum++;
-    scanLineNum %= 262;
-
-    pixelNum++;
-    pixelNum %= 341;
   }
 
   void Ppu::writeCtrl(BYTE value) {
@@ -114,7 +114,7 @@ namespace nes {
   }
 
   void Ppu::writeData(BYTE value) {
-    bus.write(regPpuAddr, value);
+    writeBus(regPpuAddr, value);
     if ((regPpuCtrl & 0x4) != 0)
       regPpuAddr += 32;
     else
@@ -139,7 +139,7 @@ namespace nes {
   }
 
   BYTE Ppu::readData() {
-    regPpuData = bus.read(regPpuAddr);
+    regPpuData = readBus(regPpuAddr);
     if ((regPpuCtrl & 0x4) != 0)
       regPpuAddr += 32;
     else
@@ -156,7 +156,20 @@ namespace nes {
     oam[index] = value;
   }
 
+  BYTE Ppu::readBus(WORD address) {
+    return bus.read(address);
+  }
+
+  WORD Ppu::readBus16(WORD address) {
+    return bus.read16(address);
+  }
+
+
+  void Ppu::writeBus(WORD address, BYTE value) {
+    bus.write(address, value);
+  }
+
   void Ppu::render() {
-    
+
   }
 }

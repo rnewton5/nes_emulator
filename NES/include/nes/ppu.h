@@ -68,6 +68,10 @@ namespace nes {
     BYTE readOamData();
     BYTE readData();
     BYTE readLatch();
+
+    BYTE readBus(WORD address);
+    WORD readBus16(WORD address);
+    void writeBus(WORD address, BYTE value);
   };
 
 }
