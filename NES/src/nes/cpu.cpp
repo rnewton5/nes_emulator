@@ -1615,55 +1615,58 @@ namespace nes {
     regA = (temp & 0xff);
   }
 
-  // This method is for debugging with the NESTEST log.
+  // This method is for logging the CPU status after every instruction.
+  // To enable logging, set the LOGGING flag to 1 at the top of this file.
+  // If you wish to compare the output to the nestest log, set the NESTEST_START
+  // flag to 1 at the top of this file. 
+  // run like NES > out.txt.
   // http://www.qmtpro.com/~nes/misc/nestest.log
-  // Remove the disassebly from the log before comparing this output to it.
-  // To enable logging, set the debug flag to 1 at the top of this file.
+  // Remove the disassembly from the log before comparing this output to it.
   void Cpu::logStatus(addressingMode mode) {
 #if LOGGING
     if (mode == addressingMode::immediate) {
       printf("%04X  ", regPC - 2);
-      printf("%02X %02X     ", read(regPC - 2), read(regPC - 1));
+      printf("%02X %02X     ", readBus(regPC - 2), readBus(regPC - 1));
     }
     if (mode == addressingMode::zeroPage) {
       printf("%04X  ", regPC - 2);
-      printf("%02X %02X     ", read(regPC - 2), read(regPC - 1));
+      printf("%02X %02X     ", readBus(regPC - 2), readBus(regPC - 1));
     }
     if (mode == addressingMode::zeroPageX) {
       printf("%04X  ", regPC - 2);
-      printf("%02X %02X     ", read(regPC - 2), read(regPC - 1));
+      printf("%02X %02X     ", readBus(regPC - 2), readBus(regPC - 1));
     }
     if (mode == addressingMode::zeroPageY) {
       printf("%04X  ", regPC - 2);
-      printf("%02X %02X     ", read(regPC - 2), read(regPC - 1));
+      printf("%02X %02X     ", readBus(regPC - 2), readBus(regPC - 1));
     }
     if (mode == addressingMode::absolute) {
       printf("%04X  ", regPC - 3);
-      printf("%02X %02X %02X  ", read(regPC - 3), read(regPC - 2), read(regPC - 1));
+      printf("%02X %02X %02X  ", readBus(regPC - 3), readBus(regPC - 2), readBus(regPC - 1));
     }
     if (mode == addressingMode::absoluteX) {
       printf("%04X  ", regPC - 3);
-      printf("%02X %02X %02X  ", read(regPC - 3), read(regPC - 2), read(regPC - 1));
+      printf("%02X %02X %02X  ", readBus(regPC - 3), readBus(regPC - 2), readBus(regPC - 1));
     }
     if (mode == addressingMode::absoluteY) {
       printf("%04X  ", regPC - 3);
-      printf("%02X %02X %02X  ", read(regPC - 3), read(regPC - 2), read(regPC - 1));
+      printf("%02X %02X %02X  ", readBus(regPC - 3), readBus(regPC - 2), readBus(regPC - 1));
     }
     if (mode == addressingMode::indirectX) {
       printf("%04X  ", regPC - 2);
-      printf("%02X %02X     ", read(regPC - 2), read(regPC - 1));
+      printf("%02X %02X     ", readBus(regPC - 2), readBus(regPC - 1));
     }
     if (mode == addressingMode::indirectY) {
       printf("%04X  ", regPC - 2);
-      printf("%02X %02X     ", read(regPC - 2), read(regPC - 1));
+      printf("%02X %02X     ", readBus(regPC - 2), readBus(regPC - 1));
     }
     if (mode == addressingMode::indirect) {
       printf("%04X  ", regPC - 3);
-      printf("%02X %02X %02X  ", read(regPC - 3), read(regPC - 2), read(regPC - 1));
+      printf("%02X %02X %02X  ", readBus(regPC - 3), readBus(regPC - 2), readBus(regPC - 1));
     }
     if (mode == addressingMode::implied) {
       printf("%04X  ", regPC - 1);
-      printf("%02X        ", read(regPC - 1));
+      printf("%02X        ", readBus(regPC - 1));
     }
     printf("A:%02X ", regA);
     printf("X:%02X ", regX);
