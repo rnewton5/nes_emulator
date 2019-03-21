@@ -3,54 +3,34 @@
 namespace nes {
 
   Ppu::Ppu(Cartridge & cartridge, Display & display, InterruptBus & interruptBus) :
-    bus(cartridge)
-  {
+    bus(cartridge) {
     this->interruptBus = &interruptBus;
     this->palette = Palette();
     init();
   }
 
-  // for info on the ppu state after startup and reset, go to
-  //   https://wiki.nesdev.com/w/index.php/PPU_power_up_state
   void Ppu::init() {
-    regPpuCtrl = 0x00;   // 0000 0000
-    regPpuMask = 0x00;   // 0000 0000
-    regPpuStat = 0xA0;   // +0+x xxxx
-    regOamAddr = 0x00;   // $00
-    regPpuScrl = 0x00;   // $0000
-    regPpuAddr = 0x00;   // $0000
-    regPpuData = 0x00;   // $00
-    latch = 0x00;        // latch cleared
+    control = 0x00;
+    mask = 0x00;
+    status = 0xA0;
+    regOamAddr = 0x00;
+    regPpuScrl = 0x00;
+    vramAddress = 0x00;
+    latch = 0x00;
     writeToggle = true;
-    scanLineNum = 261;
-    pixelNum = 0;
+    scanLineNum = -1;
     cycles = 0;
   }
 
   void Ppu::reset() {
-    regPpuCtrl = 0x00;              // 0000 0000
-    regPpuMask = 0x00;              // 0000 0000
-    regPpuStat = regPpuStat & 0x80; // U??x xxxx
-    regOamAddr = regOamAddr;        // unchanged
-    regPpuScrl = 0x00;              // $0000
-    regPpuAddr = regPpuAddr;        // unchanged
-    regPpuData = 0x00;              // $00
-    latch = 0x00;                   // latch cleared
+    control = 0x00;
+    mask = 0x00;
+    status &= 0x80;
+    regPpuScrl = 0x00;
+    latch = 0x00;
     writeToggle = true;
-    scanLineNum = 261;
-    pixelNum = 0;
-  }
-
-  void Ppu::tick() {
-    render();
-
-    // TODO: these values are for NTSC systems. Ideally, we should
-    //  check the region of the game and use the appropriate values.
-    scanLineNum++;
-    scanLineNum %= 262;
-
-    pixelNum++;
-    pixelNum %= 341;
+    scanLineNum = -1;
+    cycles = 0;
   }
 
   BYTE Ppu::read(WORD address) {
@@ -77,13 +57,53 @@ namespace nes {
     }
   }
 
+  void Ppu::oamDma(WORD startAddress, BYTE * cpuRam) {
+    writeLatch(startAddress);
+    WORD address = ((WORD)startAddress * 0x0100);
+    for (int i = 0; i < 256; i++) {
+      oam[i] = cpuRam[address + i];
+    }
+  }
+
+  void Ppu::tick() {
+    if (scanLineNum <= 239) {
+      // mem access
+
+      // render
+      if (isVisibleScanLine() && isRendering()) {
+        renderDot();
+      }
+    }
+
+    // Update cycles and scanLineNum
+    // TODO: add support for PAL systems
+    cycles++;
+    if (cycles > 340) {
+      cycles = 0;
+      scanLineNum++;
+      if (scanLineNum > 260) {
+        scanLineNum = -1;
+      }
+    }
+
+    //set or reset VBlank flag
+    if (scanLineNum == 241 && cycles == 1)
+      setVBlank();
+    else if (scanLineNum == -1 && cycles == 1)
+      clearVBlank();
+  }
+
+  void Ppu::renderDot() {
+
+  }
+
   void Ppu::writeCtrl(BYTE value) {
-    regPpuCtrl = value;
+    control = value;
     latch = value;
   }
 
   void Ppu::writeMask(BYTE value) {
-    regPpuMask = value;
+    mask = value;
     latch = value;
   }
 
@@ -108,19 +128,18 @@ namespace nes {
 
   void Ppu::writeAddr(BYTE value) {
     if (!writeToggle)
-      regPpuAddr = ((WORD)latch << 8) | value;
+      vramAddress = ((WORD)latch << 8) | value;
     writeToggle = !writeToggle;
     latch = value;
   }
 
   void Ppu::writeData(BYTE value) {
-    writeBus(regPpuAddr, value);
-    if ((regPpuCtrl & 0x4) != 0)
-      regPpuAddr += 32;
+    writeBus(vramAddress, value);
+    if ((control & 0x4) != 0)
+      vramAddress += 32;
     else
-      regPpuAddr += 1;
-    regPpuData = value;
-    latch = regPpuData;
+      vramAddress += 1;
+    latch = value;
   }
 
   void Ppu::writeLatch(BYTE value) {
@@ -130,7 +149,7 @@ namespace nes {
   BYTE Ppu::readStatus() {
     writeToggle = true;
     latch = 0;
-    return regPpuStat;
+    return status;
   }
 
   BYTE Ppu::readOamData() {
@@ -139,21 +158,44 @@ namespace nes {
   }
 
   BYTE Ppu::readData() {
-    regPpuData = readBus(regPpuAddr);
-    if ((regPpuCtrl & 0x4) != 0)
-      regPpuAddr += 32;
+    if ((control & 0x4) != 0)
+      vramAddress += 32;
     else
-      regPpuAddr += 1;
-    latch = regPpuData;
-    return regPpuData;
+      vramAddress += 1;
+    latch = readBus(vramAddress);
+    return latch;
   }
 
   BYTE Ppu::readLatch() {
     return latch;
   }
 
-  void Ppu::writeToOam(int index, BYTE value) {
-    oam[index] = value;
+
+  bool Ppu::isRendering() {
+    bool renderSprites = isRenderingSprites();
+    bool renderBackground = isRenderingBackground();
+
+    return (renderSprites || renderBackground);
+  }
+
+  bool Ppu::isRenderingSprites() {
+    return (mask & 0x10);
+  }
+
+  bool Ppu::isRenderingBackground() {
+    return (mask & 0x04);
+  }
+
+  bool Ppu::isVisibleScanLine() {
+    return (scanLineNum >= 0 && scanLineNum <= 239);
+  }
+
+  void Ppu::setVBlank() {
+    status |= 0x80;
+  }
+
+  void Ppu::clearVBlank() {
+    status &= 0x7F;
   }
 
   BYTE Ppu::readBus(WORD address) {
@@ -164,12 +206,7 @@ namespace nes {
     return bus.read16(address);
   }
 
-
   void Ppu::writeBus(WORD address, BYTE value) {
     bus.write(address, value);
-  }
-
-  void Ppu::render() {
-
   }
 }

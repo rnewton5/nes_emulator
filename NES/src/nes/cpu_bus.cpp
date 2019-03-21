@@ -13,11 +13,7 @@ namespace nes {
 
   void CpuBus::write(WORD address, BYTE value) {
     if (address == 0x4014) {
-      ppu->writeLatch(value);
-      for (int i = 0; i < 256; i++) {
-        WORD oamAddress = ((WORD)value * 0x0100) + i;
-        ppu->writeToOam(i, read(oamAddress));
-      }
+      ppu->oamDma(value, ram);
       return;
     }
 
